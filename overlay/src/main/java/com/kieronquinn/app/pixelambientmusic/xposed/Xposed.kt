@@ -1,32 +1,23 @@
 package com.kieronquinn.app.pixelambientmusic.xposed
 
-import android.os.Build
-import de.robv.android.xposed.XC_MethodHook
+import com.kieronquinn.app.pixelambientmusic.xposed.Xposed.MethodHookParam
+import java.lang.reflect.Member
+import java.lang.reflect.Method
 import com.kieronquinn.app.pixelambientmusic.utils.pine.XC_MethodHook as PineXC_MethodHook
 import com.kieronquinn.app.pixelambientmusic.utils.pine.XC_MethodHook.MethodHookParam as PineMethodHookParam
+import com.kieronquinn.app.pixelambientmusic.utils.pine.XC_MethodReplacement as PineXC_MethodReplacement
 import com.kieronquinn.app.pixelambientmusic.utils.pine.XposedBridge as PineXposedBridge
 import de.robv.android.xposed.XC_MethodHook as HookXC_MethodHook
 import de.robv.android.xposed.XC_MethodHook.MethodHookParam as HookMethodHookParam
-import de.robv.android.xposed.XposedBridge as HookXposedBridge
-import java.lang.reflect.Member
-import java.lang.reflect.Method
-import com.kieronquinn.app.pixelambientmusic.utils.pine.XC_MethodReplacement as PineXC_MethodReplacement
 import de.robv.android.xposed.XC_MethodReplacement as HookXC_MethodReplacement
+import de.robv.android.xposed.XposedBridge as HookXposedBridge
 
 object Xposed {
 
-    private fun isAndroid15(): Boolean {
-        if(Build.VERSION.SDK_INT >= 35) return true
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
-                && Build.VERSION.PREVIEW_SDK_INT != 0
-    }
+    private var _USE_PINE: Boolean? = null
 
-    /**
-     *  lsplant is not compatible with Android 15 and may never be due to Google stripping the
-     *  symbols from libart. Pine is now used instead, although it is not currently compatible with
-     *  x86_64.
-     */
-    private val USE_PINE = isAndroid15()
+    private val USE_PINE: Boolean
+        get() = _USE_PINE ?: shouldUsePine()
 
     fun hookMethod(replace: Member, hook: MethodHook) {
         if(USE_PINE) {
@@ -99,6 +90,22 @@ object Xposed {
             PineXposedBridge.deoptimizeMethod(method)
         }else{
             HookXposedBridge.deoptimizeMethod(method)
+        }
+    }
+
+    /**
+     *  Check if LSPlant is compatible with this device; if not, try to use Pine. If that fails, the
+     *  app will crash due to no supported hooking methods.
+     */
+    @Synchronized
+    private fun shouldUsePine(): Boolean {
+        return try {
+            HookXposedBridge()
+            false
+        }catch (e: UnsatisfiedLinkError) {
+            true
+        }.also {
+            _USE_PINE = it
         }
     }
 

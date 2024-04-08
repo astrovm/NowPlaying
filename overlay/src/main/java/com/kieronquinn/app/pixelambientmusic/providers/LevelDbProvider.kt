@@ -237,8 +237,10 @@ class LevelDbProvider: ContentProvider() {
     }
 
     private fun getLevelDbCounties(): List<String> {
-        return listOf(DeviceConfigOverrides.getPrimaryLanguage()) +
-                DeviceConfigOverrides.getExtraLanguages()
+        return (listOf(DeviceConfigOverrides.getPrimaryLanguage()) +
+                DeviceConfigOverrides.getExtraLanguages()).map {
+            it.replace("us,xa", "us")
+        }
     }
 
     private fun getLevelDbFiles(): List<File> {
@@ -256,7 +258,9 @@ class LevelDbProvider: ContentProvider() {
         if(!ambientDir.exists()) return files
         val packs = ambientDir.listFiles()?.filterNot { it.name.startsWith("cc-") }?.let {
             it.filter { file ->
-                levelDbCountries.any { country -> file.name.startsWith(country, true) }
+                levelDbCountries.any { country ->
+                    file.name.startsWith(country, true)
+                }
             }
         }
         files.addAll(packs ?: emptyList())
