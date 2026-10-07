@@ -30,6 +30,6 @@ android {
 
 dependencies {
     api("com.google.guava:guava:33.7.2-android")
-    api("org.iq80.snappy:snappy:0.4")
+    api("org.iq80.snappy:snappy:0.5")
     api("org.xerial.snappy:snappy-java:1.1.10.11")
 }

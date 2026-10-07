@@ -58,7 +58,7 @@ dependencies {
     implementation("org.lsposed.hiddenapibypass:hiddenapibypass:6.1")
     implementation("com.aliucord:Aliuhook:main-20250209.193512-18")
     implementation("top.canyie.pine:core:0.3.0")
-    implementation("com.google.protobuf:protobuf-lite:3.0.1")
+    implementation("com.google.protobuf:protobuf-javalite:4.36.2")
     implementation("com.google.code.gson:gson:2.14.0")
     implementation("com.squareup.picasso:picasso:2.71828")
     implementation("org.bouncycastle:bcpkix-jdk18on:1.86")
@@ -66,19 +66,10 @@ dependencies {
 }
 
 protobuf {
-    protoc {
-        artifact = "com.google.protobuf:protoc:3.10.1"
-    }
-    plugins {
-        id("javalite") {
-            artifact = "com.google.protobuf:protoc-gen-javalite:3.0.0"
-        }
-    }
+    protoc { artifact = "com.google.protobuf:protoc:4.36.2" }
     generateProtoTasks {
         all().forEach { task ->
-            task.plugins {
-                id("javalite")
-            }
+            task.builtins { id("java") { option("lite") } }
         }
     }
 }
