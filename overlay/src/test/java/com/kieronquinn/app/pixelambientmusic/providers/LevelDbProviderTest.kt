@@ -69,4 +69,23 @@ class LevelDbProviderTest {
         assertEquals(2, query("count/leveldb"))
     }
     @Test fun emptyDatabaseReturnsZero() { assertEquals(0, query("count/leveldb")) }
+    @Test fun largeMetadataIsStreamedWithinTheDeviceHeapBudget() {
+        val count = 20_000
+        val player = ShardTracks.Track.Player.newBuilder()
+            .setUrl("https://example.test/" + "x".repeat(512)).build()
+        File(folder, "JP0").outputStream().use { stream ->
+            val builder = TableBuilder(Options().compressionType(CompressionType.NONE),
+                stream.channel, BytewiseComparator())
+            repeat(count) { index ->
+                val track = ShardTracks.Track.newBuilder().setDbId("db000000001")
+                    .setTrackName("Synthetic $index").setArtist("Test artist")
+                repeat(25) { track.addPlayer(player) }
+                builder.add(Slices.wrappedBuffer("%08d".format(index).toByteArray()),
+                    Slices.wrappedBuffer(track.build().toByteArray()))
+            }
+            builder.finish()
+        }
+        assertEquals(count, query("count/leveldb"))
+    }
+
 }

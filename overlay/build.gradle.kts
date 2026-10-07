@@ -76,3 +76,6 @@ protobuf {
         }
     }
 }
+
+// Exercise database counting within the heap budget of the affected physical device.
+tasks.withType<Test>().configureEach { maxHeapSize = "256m" }

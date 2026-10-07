@@ -220,18 +220,14 @@ class LevelDbProvider: ContentProvider() {
         cachePrefs.getCachedCount(hash)?.let {
             return createCursor(it)
         }
-        val names = HashSet<String>()
+        val names = HashSet<Pair<String, String>>()
         files.forEach { file ->
-            forEachTrack(file) { names.add(it.sharedName()) }
+            forEachTrack(file) { names.add(it.trackName to it.artist) }
         }
         val count = names.size
         return createCursor(count).also {
             cachePrefs.commitCachedCount(hash, count)
         }
-    }
-
-    private fun ShardTracks.Track.sharedName(): String {
-        return "$trackName:$artist"
     }
 
     private fun getLevelDbCounties(): List<String> {
