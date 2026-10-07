@@ -21,20 +21,22 @@ val smaliToRemove = arrayOf(
 
 fun getLocalProperty(key: String): String? {
     return java.util.Properties().apply {
-        load(java.io.FileInputStream(File(rootProject.rootDir, "local.properties")))
+        val local = File(rootProject.rootDir, "local.properties")
+        if(local.exists()) local.inputStream().use { load(it) }
     }.getProperty(key)
 }
 
 fun assertAndroidHome(): String {
-    return getLocalProperty("sdk.dir")
-        ?: throw Exception("sdk.dir not set in local.properties")
+    return getLocalProperty("sdk.dir") ?: System.getenv("ANDROID_HOME")
+        ?: System.getenv("ANDROID_SDK_ROOT")
+        ?: throw Exception("Set sdk.dir or ANDROID_HOME")
 }
 
 fun assertBuildTools(): File {
     val androidHome = assertAndroidHome()
     val buildToolsBaseDir = File(androidHome, "build-tools")
     val buildToolsVersion = getLocalProperty("build.tools.version")
-        ?: throw Exception("build.tools.version not set in local.properties, please set it to a version in ${buildToolsBaseDir.absolutePath}")
+        ?: "36.0.0"
     val buildToolsDir = File(buildToolsBaseDir, buildToolsVersion)
     if(!buildToolsDir.exists()){
         throw Exception("Invalid build.tools.version specified, not found in ${buildToolsBaseDir.absolutePath}")
@@ -330,6 +332,7 @@ fun createSignTask(suffix: String, release: Boolean) {
             assertBaseManifest()
         }
         dependsOn("alignOutApk$suffix")
+        doFirst {
         val signApkConfig = getSignApkConfig(release)
         if (!signApkConfig.keystore.exists()) {
             throw Exception("Keystore ${signApkConfig.keystore.absolutePath} does not exist")
@@ -354,6 +357,7 @@ fun createSignTask(suffix: String, release: Boolean) {
             "pass:" + signApkConfig.keyPass,
             outAlignedApk.absolutePath
         )
+        }
     }
 }
 
