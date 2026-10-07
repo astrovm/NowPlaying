@@ -25,7 +25,7 @@ class LevelDbProviderTest {
     private lateinit var folder: File
     private lateinit var provider: LevelDbProvider
     @Before fun setup() {
-        val context = RuntimeEnvironment.getApplication<Application>()
+        val context = RuntimeEnvironment.getApplication()
         File(context.filesDir, "pixel_ambient_music").mkdirs()
         folder = File(context.filesDir, "superpacks/ambientmusic-index-17_09_02").apply { mkdirs() }
         DeviceConfigOverrides::class.java.getDeclaredField("FLAG_VALUES").apply { isAccessible = true }

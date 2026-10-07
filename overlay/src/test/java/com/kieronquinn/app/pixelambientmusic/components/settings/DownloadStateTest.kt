@@ -13,7 +13,7 @@ import org.robolectric.annotation.Config
 @Config(application = Application::class, sdk = [35])
 class DownloadStateTest {
     @Test fun completedAndUnrelatedDownloadsAreNotPendingMusic() {
-        val context = RuntimeEnvironment.getApplication<Application>()
+        val context = RuntimeEnvironment.getApplication()
         val path = context.getDatabasePath("superpacks.db")
         path.parentFile!!.mkdirs()
         SQLiteDatabase.openOrCreateDatabase(path, null).use { database ->
@@ -26,7 +26,7 @@ class DownloadStateTest {
         }
     }
     @Test fun missingDatabaseReturnsZero() {
-        val context = RuntimeEnvironment.getApplication<Application>()
+        val context = RuntimeEnvironment.getApplication()
         context.deleteDatabase("superpacks.db")
         assertEquals(0, SettingsStateHandler.getSuperpackDownloadCount(context))
     }

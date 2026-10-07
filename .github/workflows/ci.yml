@@ -1,7 +1,7 @@
 name: Companion checks
 on:
   push:
-    branches: [main, 'maintenance/**']
+    branches: [main]
   pull_request:
 permissions:
   contents: read
