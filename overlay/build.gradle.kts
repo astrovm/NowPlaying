@@ -43,6 +43,7 @@ android {
         aidl = true
         buildConfig = true
     }
+    packaging { resources.merges += setOf("META-INF/LICENSE.md", "META-INF/NOTICE.md") }
     testOptions { unitTests.isIncludeAndroidResources = true }
     namespace = "com.kieronquinn.app.pixelambientmusic"
 }
