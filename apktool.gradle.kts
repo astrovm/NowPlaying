@@ -87,7 +87,7 @@ fun assertBaseManifest() {
 }
 
 fun getOutApk(suffix: String): File {
-    return File(project.buildDir, "out-${suffix.toLowerCase()}-unaligned.apk")
+    return File(project.buildDir, "out-${suffix.lowercase()}-unaligned.apk")
 }
 
 fun assertOutApk(suffix: String) {
@@ -98,7 +98,7 @@ fun assertOutApk(suffix: String) {
 }
 
 fun getOutAlignedApk(suffix: String): File {
-    return File(project.buildDir, "out-${suffix.toLowerCase()}.apk")
+    return File(project.buildDir, "out-${suffix.lowercase()}.apk")
 }
 
 fun assertOutAlignedApk(suffix: String) {

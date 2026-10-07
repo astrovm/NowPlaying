@@ -3,7 +3,7 @@ plugins {
 }
 
 android {
-    compileSdk = 33
+    compileSdk = 37
 
     defaultConfig {
         minSdk = 29
@@ -33,5 +33,5 @@ android {
 }
 
 dependencies {
-    implementation("androidx.annotation:annotation:1.7.1")
+    implementation("androidx.annotation:annotation:1.11.0")
 }

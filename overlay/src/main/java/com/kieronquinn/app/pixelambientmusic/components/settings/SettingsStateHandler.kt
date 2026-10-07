@@ -67,7 +67,7 @@ object SettingsStateHandler {
         val pendingDownloads = sqliteDatabase.query(
             SUPERPACKS_PENDING_DOWNLOADS_TABLE_NAME,
             arrayOf(SUPERPACKS_SUPERPACK_NAME_COLUMN),
-            "$SUPERPACKS_SUPERPACK_NAME_COLUMN = ?",
+            "$SUPERPACKS_SUPERPACK_NAME_COLUMN = ? AND completed = 0",
             arrayOf(SUPERPACK_NAME),
             null,
             null,
@@ -110,7 +110,7 @@ object SettingsStateHandler {
         val pendingDownloads = sqliteDatabase.query(
             SUPERPACKS_PENDING_DOWNLOADS_TABLE_NAME,
             arrayOf(SUPERPACKS_SUPERPACK_NAME_COLUMN),
-            "$SUPERPACKS_SUPERPACK_NAME_COLUMN = ?",
+            "$SUPERPACKS_SUPERPACK_NAME_COLUMN = ? AND completed = 0",
             arrayOf(SUPERPACK_NAME),
             null,
             null,

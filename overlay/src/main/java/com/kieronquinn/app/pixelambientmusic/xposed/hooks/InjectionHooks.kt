@@ -42,9 +42,9 @@ class InjectionHooks: XposedHooks() {
 
     private fun any_setLabel(className: String) = MethodHook {
         INJECTED_HOOKS[className]?.let {
-            val callingClass = getCallingClassName()?.let { name ->
-                Thread.currentThread().contextClassLoader!!.loadClass(name)
-            } as Class<*>
+            val name = getCallingClassName() ?: return@let
+            val loader = Thread.currentThread().contextClassLoader ?: javaClass.classLoader
+            val callingClass = Class.forName(name, false, loader)
             it.setClass(callingClass)
         }
         MethodResult.Skip<Any>()

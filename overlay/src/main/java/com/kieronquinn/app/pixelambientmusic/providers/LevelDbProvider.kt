@@ -220,13 +220,11 @@ class LevelDbProvider: ContentProvider() {
         cachePrefs.getCachedCount(hash)?.let {
             return createCursor(it)
         }
-        val count = files.map { loadDatabase(it) }
-            .flatten()
-            .groupBy { it.dbId }
-            .map { it.value }
-            .flatten()
-            .distinctBy { it.sharedName() }
-            .size
+        val names = HashSet<String>()
+        files.forEach { file ->
+            forEachTrack(file) { names.add(it.sharedName()) }
+        }
+        val count = names.size
         return createCursor(count).also {
             cachePrefs.commitCachedCount(hash, count)
         }
@@ -267,19 +265,24 @@ class LevelDbProvider: ContentProvider() {
         return files
     }
 
-    private fun loadDatabase(file: File): ArrayList<ShardTracks.Track> = try {
-        val stream = file.inputStream()
-        val channel = stream.channel
-        val database =  FileChannelTable(file.name, channel, BytewiseComparator(), true)
-        val tracks = ArrayList<ShardTracks.Track>()
-        database.iterator().forEach {
-            val track = parseTrackProto(it.value.bytes) ?: return@forEach
-            tracks.add(track)
+    private fun forEachTrack(file: File, action: (ShardTracks.Track) -> Unit) {
+        try {
+            file.inputStream().use { stream ->
+                val database = FileChannelTable(file.name, stream.channel, BytewiseComparator(), true)
+                database.iterator().forEach {
+                    val track = parseTrackProto(it.value.bytes) ?: return@forEach
+                    action(track)
+                }
+            }
+        } catch (e: Exception) {
+            //A partial or corrupt shard must not prevent reading the remaining databases.
         }
-        tracks
-    }catch (e: Exception){
-        //Corrupt file
-        ArrayList()
+    }
+
+    private fun loadDatabase(file: File): ArrayList<ShardTracks.Track> {
+        return ArrayList<ShardTracks.Track>().also { tracks ->
+            forEachTrack(file) { tracks.add(it) }
+        }
     }
 
     private fun loadDatabase(name: String): Map<String, List<ShardTracks.Track>> {
@@ -494,7 +497,7 @@ class LevelDbProvider: ContentProvider() {
 
     private fun getHashCode(): Int {
         val files = getLevelDbFiles()
-        return files.map { it.name }.hashCode()
+        return files.sortedBy { it.name }.map { "${it.name}:${it.length()}:${it.lastModified()}" }.hashCode()
     }
 
     private fun SharedPreferences.getCachedCount(hashCode: Int): Int? {

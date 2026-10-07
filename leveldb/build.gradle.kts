@@ -3,7 +3,7 @@ plugins {
 }
 
 android {
-    compileSdk = 33
+    compileSdk = 37
 
     defaultConfig {
         minSdk = 29
@@ -30,7 +30,7 @@ android {
 }
 
 dependencies {
-    api("com.google.guava:guava:31.1-android")
+    api("com.google.guava:guava:33.7.2-android")
     api("org.iq80.snappy:snappy:0.4")
-    api("org.xerial.snappy:snappy-java:1.1.8.4")
+    api("org.xerial.snappy:snappy-java:1.1.10.11")
 }
