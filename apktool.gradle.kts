@@ -111,7 +111,7 @@ fun assertOutAlignedApk(suffix: String) {
 }
 
 fun findSmaliDirs(directory: File): List<File> {
-    return directory.listFiles()?.filter { it.isDirectory && (it.name == "smali" || it.name.matches(Regex("smali_classes[0-9]+"))) }?.sortedBy { it.name } ?: emptyList()
+    return directory.listFiles()?.filter { it.isDirectory && (it.name == "smali" || it.name.matches(Regex("smali_classes[0-9]+"))) }?.sortedBy { if (it.name == "smali") 1 else it.name.removePrefix("smali_classes").toInt() } ?: emptyList()
 }
 
 fun copySmaliDirs(from: File, to: File) {
@@ -132,6 +132,17 @@ fun copySmaliDirs(from: File, to: File) {
         val next = maxIndex + index + 1
         val folderName = if (next == 1) "smali" else "smali_classes$next"
         folder.copyRecursively(File(to, folderName), overwrite = true)
+    }
+}
+
+fun removeDuplicateSmali(directory: File) {
+    // Android resolves the first definition in dex order. Preserve that behavior
+    // for duplicates inherited from the old base, including its empty compile stub.
+    val seen = HashSet<String>()
+    findSmaliDirs(directory).forEach { folder ->
+        folder.walkTopDown().filter { it.isFile && it.extension == "smali" }.forEach { file ->
+            if (!seen.add(file.relativeTo(folder).path)) file.delete()
+        }
     }
 }
 
@@ -297,6 +308,7 @@ task("copyOverlay"){
         }
         modifyApktoolYml(apktoolYml)
         copySmaliDirs(decompiledDir, baseDir)
+        removeDuplicateSmali(baseDir)
         copyResDir(rawResDir, baseDir)
         copyAssetsDir(decompiledDir, baseDir)
         copyLibsDir(decompiledDir, baseDir)
