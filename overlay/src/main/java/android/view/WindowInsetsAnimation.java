@@ -296,7 +296,7 @@ public final class WindowInsetsAnimation {
         @DispatchMode
         @SuppressLint("CallbackMethodName") // TODO(b/149430296) False positive: not a callback.
         public final int getDispatchMode() {
-            return 0;
+            return DISPATCH_MODE_STOP;
         }
 
         /**

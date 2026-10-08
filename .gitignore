@@ -290,3 +290,6 @@ libleveldbjni.so
 ##libmodeleditor-jni for x86_64
 libmodeleditor-jni.so
 
+
+# Kotlin compiler session state
+.kotlin/

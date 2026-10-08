@@ -13,14 +13,14 @@ class RoundedCornersTransform(private val radius: Float) : Transformation {
         if (squaredBitmap != source) {
             source.recycle()
         }
-        val bitmap = Bitmap.createBitmap(size, size, source.config)
+        val bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
         val paint = Paint()
         val shader = BitmapShader(squaredBitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP)
         paint.shader = shader
         paint.isAntiAlias = true
         canvas.drawRoundRect(
-            RectF(0f, 0f, source.width.toFloat(), source.height.toFloat()),
+            RectF(0f, 0f, size.toFloat(), size.toFloat()),
             radius,
             radius,
             paint
@@ -30,6 +30,6 @@ class RoundedCornersTransform(private val radius: Float) : Transformation {
     }
 
     override fun key(): String {
-        return "rounded_corners"
+        return "rounded_corners:$radius"
     }
 }

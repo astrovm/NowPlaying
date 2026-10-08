@@ -1,3 +1,5 @@
+> Maintained overlay fork under development. See [the maintenance audit](MAINTENANCE.md) and [paired app fork](https://github.com/astrovm/AmbientMusicMod). Full APKs retain the upstream proprietary recognition engine.
+
 ![Ambient Music Mod Banner](https://i.imgur.com/SPWAuFll.png)
 
 [Ambient Music Mod](https://github.com/KieronQuinn/AmbientMusicMod) | **Now Playing** 
@@ -33,3 +35,22 @@ build.tools.version=<the version of build tools to use, eg. 32.0.0>
 ## Sources
 
 This repository contains a local version of [dain/leveldb](https://github.com/dain/leveldb) ([Apache 2.0 licence](https://github.com/dain/leveldb/blob/master/license.txt)), as well as some of [canyie/Pine](https://github.com/canyie/pine)'s `xposed` module, due to package conflicts ([Anti 996 licence](https://github.com/996icu/996.ICU/blob/master/LICENSE)), embedding Apache Commons Lang ([Apache 2.0 licence](https://github.com/canyie/pine/blob/master/xposed/src/main/apacheCommonsLang/LICENSE.txt))
+
+## Maintaining the existing binary base
+
+The overlay can be built and tested without proprietary ASI inputs:
+
+```sh
+bash gradlew :overlay:assembleDebug :overlay:testDebugUnitTest :overlay:lintDebug
+```
+
+A complete recognition APK still requires the ASI base and native libraries described above.
+For compatibility testing with the public upstream Now Playing 1.3.5 APK, put that
+release APK at `base.apk` and use `bash gradlew buildApkDebug -PbaseAlreadyPatched=true`.
+This retains the upstream proprietary recognition engine and replaces overlay classes.
+The flag skips ASI smali patches already present in that release. Do not use it with
+an original, unmodified ASI APK. This is not a port to a newer ASI engine.
+
+Debug builds use the local Android debug keystore. Build Ambient Music Mod on the
+same machine so its certificate matches. A different certificate cannot update an
+existing upstream installation without removing its app data.

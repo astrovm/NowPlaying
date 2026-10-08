@@ -68,7 +68,7 @@ object DeviceConfigOverrides {
     }
 
     fun getPrimaryLanguage(): String {
-        return getValue("NowPlaying__device_country")!!
+        return getValue("NowPlaying__device_country") ?: ""
     }
 
     fun getExtraLanguages(): List<String> {

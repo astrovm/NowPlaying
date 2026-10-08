@@ -26,9 +26,16 @@ fun XC_MethodReplacement(replaceHookedMethod: ((param: XC_MethodHook.MethodHookP
     }
 }
 
-fun getCallingClassName(): String? {
-    val classes = Thread.currentThread().stackTrace.map { it.className }
-    val lspIndex = classes.indexOfFirst { it == "LSPHooker_" }
-    if(lspIndex == -1 || lspIndex == classes.size) return null
-    return classes[lspIndex + 1]
+/** Resolve the original caller across LSPlant and Pine bridge frames. */
+internal fun getCallingClassName(stack: Array<StackTraceElement>): String? {
+    val bridge = stack.indexOfLast {
+        it.className == "LSPHooker_" || it.className.startsWith("top.canyie.pine.entry.")
+    }
+    if(bridge < 0) return null
+    return stack.drop(bridge + 1).firstOrNull {
+        !it.className.startsWith("java.lang.reflect.") &&
+                !it.className.startsWith("java.lang.invoke.")
+    }?.className
 }
+
+fun getCallingClassName(): String? = getCallingClassName(Thread.currentThread().stackTrace)

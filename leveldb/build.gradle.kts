@@ -3,11 +3,10 @@ plugins {
 }
 
 android {
-    compileSdk = 33
+    compileSdk = 37
 
     defaultConfig {
         minSdk = 29
-        targetSdk = 33
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
@@ -30,7 +29,7 @@ android {
 }
 
 dependencies {
-    api("com.google.guava:guava:31.1-android")
-    api("org.iq80.snappy:snappy:0.4")
-    api("org.xerial.snappy:snappy-java:1.1.8.4")
+    api("com.google.guava:guava:33.7.2-android")
+    api("org.iq80.snappy:snappy:0.5")
+    api("org.xerial.snappy:snappy-java:1.1.10.11")
 }

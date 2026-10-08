@@ -3,11 +3,10 @@ plugins {
 }
 
 android {
-    compileSdk = 33
+    compileSdk = 37
 
     defaultConfig {
         minSdk = 29
-        targetSdk = 33
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
@@ -33,5 +32,5 @@ android {
 }
 
 dependencies {
-    implementation("androidx.annotation:annotation:1.7.1")
+    implementation("androidx.annotation:annotation:1.11.0")
 }

@@ -3,7 +3,6 @@ package android.service.attention
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
-import androidx.annotation.NonNull
 
 /**
  *  No-op version of [AttentionService] for Android < 10
@@ -20,14 +19,14 @@ abstract class AttentionService: Service() {
      *
      * @param callback the callback to return the result to
      */
-    abstract fun onCheckAttention(@NonNull callback: AttentionCallback?)
+    abstract fun onCheckAttention(callback: AttentionCallback)
 
     /**
      * Cancels pending work for a given callback.
      *
      * Implementation must call back with a failure code of [.ATTENTION_FAILURE_CANCELLED].
      */
-    abstract fun onCancelAttentionCheck(@NonNull callback: AttentionCallback?)
+    abstract fun onCancelAttentionCheck(callback: AttentionCallback)
 
     /** Callbacks for AttentionService results.  */
     class AttentionCallback {

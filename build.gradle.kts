@@ -1,9 +1,9 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 plugins {
-    id("org.jetbrains.kotlin.android").version("1.9.22").apply(false)
-    id("com.android.application").version("8.2.2").apply(false)
-    id("com.android.library").version("8.2.2").apply(false)
-    id("com.google.protobuf").version("0.9.4").apply(false)
+    id("org.jetbrains.kotlin.android").version("2.4.20").apply(false)
+    id("com.android.application").version("9.4.1").apply(false)
+    id("com.android.library").version("9.4.1").apply(false)
+    id("com.google.protobuf").version("0.10.0").apply(false)
 }
 
 apply("variables.gradle.kts")
