@@ -111,16 +111,27 @@ fun assertOutAlignedApk(suffix: String) {
 }
 
 fun findSmaliDirs(directory: File): List<File> {
-    return directory.listFiles().filter { it.name.startsWith("smali") }
+    return directory.listFiles()?.filter { it.isDirectory && (it.name == "smali" || it.name.matches(Regex("smali_classes[0-9]+"))) }?.sortedBy { it.name } ?: emptyList()
 }
 
 fun copySmaliDirs(from: File, to: File) {
-    val currentSize = findSmaliDirs(to).size
     val smaliDirs = findSmaliDirs(from)
+    // Remove prior definitions before copying: both a repeated merge and a prepatched
+    // base can already contain classes supplied by the overlay.
+    val existingDirs = findSmaliDirs(to)
+    smaliDirs.forEach { folder ->
+        folder.walkTopDown().filter { it.isFile && it.extension == "smali" }.forEach { file ->
+            val relative = file.relativeTo(folder)
+            existingDirs.forEach { File(it, relative.path).delete() }
+        }
+    }
+    val maxIndex = existingDirs.maxOfOrNull {
+        if (it.name == "smali") 1 else it.name.removePrefix("smali_classes").toInt()
+    } ?: 0
     smaliDirs.forEachIndexed { index, folder ->
-        //Index of smali_classes starts at 2
-        val folderName = "smali_classes${currentSize + index + 1}"
-        folder.copyRecursively(File(to, folderName))
+        val next = maxIndex + index + 1
+        val folderName = if (next == 1) "smali" else "smali_classes$next"
+        folder.copyRecursively(File(to, folderName), overwrite = true)
     }
 }
 
@@ -133,7 +144,7 @@ fun copyAssetsDir(from: File, to: File) {
 }
 
 fun copyLibsDir(from: File, to: File) {
-    File(from, "lib").copyRecursively(File(to, "lib"), true)
+    File(from, "lib").takeIf { it.exists() }?.copyRecursively(File(to, "lib"), true)
 }
 
 fun copyManifest(from: File, to: File) {
@@ -159,9 +170,9 @@ fun stripSmali(from: File) {
 
 fun modifyApktoolYml(apktoolYml: File) {
     val yaml = apktoolYml.readText()
-        .replaceGroup("  minSdkVersion: '(.*)'", 1, project.extra.get("minSdk").toString())
-        .replaceGroup("  targetSdkVersion: '(.*)'", 1, project.extra.get("targetSdk").toString())
-        .replaceGroup("  versionCode: '(.*)'", 1, project.extra.get("versionCode").toString())
+        .replaceGroup("  minSdkVersion: (.*)", 1, project.extra.get("minSdk").toString())
+        .replaceGroup("  targetSdkVersion: (.*)", 1, project.extra.get("targetSdk").toString())
+        .replaceGroup("  versionCode: (.*)", 1, project.extra.get("versionCode").toString())
         .replaceGroup("  versionName: (.*)", 1, project.extra.get("versionName").toString())
     apktoolYml.writeText(yaml)
 }
@@ -230,7 +241,7 @@ task<Exec>("decompileBase") {
  *  Decompiles the base and packages the overlay (their order isn't important)
  */
 task("buildOverlay") {
-    dependsOn("decompileBase", ":overlay:packageDebugUniversalApk")
+    dependsOn("decompileBase", ":overlay:assembleDebug")
 }
 
 /**
@@ -242,9 +253,9 @@ task<Exec>("decompileOverlay") {
     val overlayModule = File(project.rootDir, "overlay")
     val overlayBuild = File(overlayModule, "build")
     val overlayOutputs = File(overlayBuild, "outputs")
-    val overlayApkDir = File(overlayOutputs, "apk_from_bundle")
+    val overlayApkDir = File(overlayOutputs, "apk")
     val overlayDebugApkDir = File(overlayApkDir, "debug")
-    val overlayApk = File(overlayDebugApkDir, "overlay-debug-universal.apk")
+    val overlayApk = File(overlayDebugApkDir, "overlay-debug.apk")
     val decompiledDir = File(overlayBuild, "decompiled")
     doLast {
         assertApktool()
@@ -290,7 +301,9 @@ task("copyOverlay"){
         copyAssetsDir(decompiledDir, baseDir)
         copyLibsDir(decompiledDir, baseDir)
         copyLibsDir(overlaySrcMain, baseDir)
-        modifySmaliWithRegex(baseDir)
+        if (!providers.gradleProperty("baseAlreadyPatched").map(String::toBoolean).getOrElse(false)) {
+            modifySmaliWithRegex(baseDir)
+        }
         stripLibs(baseDir)
         stripSmali(baseDir)
         copyManifest(decompiledDir, baseDir)
