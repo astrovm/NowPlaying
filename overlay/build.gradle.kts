@@ -59,7 +59,7 @@ dependencies {
     implementation(project(mapOf("path" to ":leveldb")))
     implementation("androidx.core:core:1.19.1")
     implementation("org.lsposed.hiddenapibypass:hiddenapibypass:6.1")
-    implementation("com.aliucord:Aliuhook:main-20250209.193512-18")
+    implementation("com.aliucord:Aliuhook:1.1.4")
     implementation("top.canyie.pine:core:0.3.0")
     implementation("com.google.protobuf:protobuf-javalite:4.36.2")
     implementation("com.google.code.gson:gson:2.14.0")

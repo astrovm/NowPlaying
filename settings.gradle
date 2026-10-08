@@ -10,7 +10,7 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-        maven { url "https://maven.aliucord.com/snapshots" }
+        maven { url "https://maven.aliucord.com/releases" }
         maven { url 'https://jitpack.io' }
     }
 }
