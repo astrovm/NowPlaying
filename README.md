@@ -1,3 +1,5 @@
+> Maintained overlay fork under development. See [the maintenance audit](MAINTENANCE.md) and [paired app fork](https://github.com/astrovm/AmbientMusicMod). Full APKs retain the upstream proprietary recognition engine.
+
 ![Ambient Music Mod Banner](https://i.imgur.com/SPWAuFll.png)
 
 [Ambient Music Mod](https://github.com/KieronQuinn/AmbientMusicMod) | **Now Playing** 
