@@ -69,6 +69,25 @@ class LevelDbProviderTest {
         assertEquals(2, query("count/leveldb"))
     }
     @Test fun emptyDatabaseReturnsZero() { assertEquals(0, query("count/leveldb")) }
+    private fun countries(values: Map<String, String>) {
+        DeviceConfigOverrides::class.java.getDeclaredField("FLAG_VALUES").apply { isAccessible = true }
+            .set(null, values)
+    }
+
+    @Test fun japanOnlyDoesNotLoadOtherCountries() {
+        countries(mapOf("NowPlaying__device_country" to "jp"))
+        shard("JP0", "Japan track")
+        shard("US0", "Other track")
+        assertEquals(1, query("count/leveldb"))
+    }
+
+    @Test fun missingCountryConfigurationDoesNotSelectEveryCountry() {
+        countries(emptyMap())
+        shard("JP0", "Japan track")
+        shard("US0", "Other track")
+        assertEquals(0, query("count/leveldb"))
+    }
+
     @Test fun largeMetadataIsStreamedWithinTheDeviceHeapBudget() {
         val count = 20_000
         val player = ShardTracks.Track.Player.newBuilder()

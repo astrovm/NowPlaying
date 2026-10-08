@@ -233,8 +233,8 @@ class LevelDbProvider: ContentProvider() {
     private fun getLevelDbCounties(): List<String> {
         return (listOf(DeviceConfigOverrides.getPrimaryLanguage()) +
                 DeviceConfigOverrides.getExtraLanguages()).map {
-            it.replace("us,xa", "us")
-        }
+            it.replace("us,xa", "us").trim()
+        }.filter { it.isNotEmpty() }.distinct()
     }
 
     private fun getLevelDbFiles(): List<File> {
