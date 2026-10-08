@@ -307,6 +307,12 @@ task("copyOverlay"){
         stripLibs(baseDir)
         stripSmali(baseDir)
         copyManifest(decompiledDir, baseDir)
+        // Apktool decodes this hidden framework resource as a public reference.
+        // aapt2 requires the explicit private-resource syntax when rebuilding ASI.
+        File(baseDir, "res/layout/dismiss_confirmation_view.xml").takeIf { it.exists() }?.let {
+            it.writeText(it.readText().replace("@android:drawable/expander_ic_maximized",
+                "@*android:drawable/expander_ic_maximized"))
+        }
     }
 }
 
