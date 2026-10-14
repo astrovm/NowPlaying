@@ -81,7 +81,7 @@ class LevelDbProviderTest {
         listOf("linear.db", "linear_v3.db").forEach { name ->
             File(cache, name).writeBytes(Tracks.getDefaultInstance().toByteArray())
             linearQuery(name)!!.use { assertEquals(0, it.count) }
-            assertEquals(0, query("count/$name"))
+            assertEquals(0, query("count/linear/$name"))
         }
     }
 
@@ -95,7 +95,7 @@ class LevelDbProviderTest {
             (1..100).map { "../".repeat(it) + "files/private.db" }
         names.forEach { name ->
             assertNull(name, linearQuery(name))
-            assertNull(name, linearQuery(name, "count"))
+            assertNull(name, linearQuery(name, "count/linear"))
         }
     }
 
