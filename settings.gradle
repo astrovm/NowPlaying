@@ -18,3 +18,5 @@ rootProject.name = "NowPlaying"
 include ':overlay'
 include ':systemstubs'
 include ':leveldb'
+
+apply from: "gradle/security-dependencies.gradle"

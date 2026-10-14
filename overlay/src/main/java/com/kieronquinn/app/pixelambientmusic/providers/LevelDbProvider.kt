@@ -371,9 +371,18 @@ class LevelDbProvider: ContentProvider() {
     }
 
     private fun loadLinear(name: String): Tracks? {
-        val file = File(requireContextCompat().cacheDir, name)
-        if(!file.exists()) return null
-        return Tracks.parseFrom(file.readBytes())
+        val file = when (name) {
+            "linear.db" -> linearFile
+            "linear_v3.db" -> linearv3File
+            else -> return null
+        }
+        return try {
+            if (!file.isFile || file.canonicalFile.parentFile !=
+                requireContextCompat().cacheDir.canonicalFile) return null
+            Tracks.parseFrom(file.readBytes())
+        } catch (e: Exception) {
+            null
+        }
     }
 
     private fun loadLinearIntoCursor(name: String): Cursor? {
