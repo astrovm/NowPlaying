@@ -64,6 +64,10 @@ dependencies {
     implementation("com.google.protobuf:protobuf-javalite:4.36.2")
     implementation("com.google.code.gson:gson:2.14.0")
     implementation("com.squareup.picasso:picasso:2.71828")
+    constraints {
+        implementation("com.squareup.okhttp3:okhttp:4.12.0")
+        implementation("com.squareup.okio:okio:3.18.2")
+    }
     implementation("org.bouncycastle:bcpkix-jdk18on:1.86")
     implementation("org.bouncycastle:bcprov-jdk18on:1.86")
 }
